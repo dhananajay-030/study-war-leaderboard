@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { interval, Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
-const LEADERBOARD_URL = 'https://productivity-leaderboard.onrender.com';
+const LEADERBOARD_URL = 'https://study-war-leaderboard.onrender.com';
 const UPDATE_INTERVAL_MS = 30000;
 
 @Injectable({ providedIn: 'root' })
