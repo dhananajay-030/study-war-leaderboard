@@ -13,424 +13,148 @@
     --border: #2a2a2a;
     --text: #e8e8e8;
     --muted: #666;
-    --accent: #e8e8e8;
     --green: #4ade80;
     --red: #f87171;
     --amber: #fbbf24;
-    --blue: #60a5fa;
     --gold: #f59e0b;
     --silver: #94a3b8;
     --bronze: #b45309;
-    --king: #f59e0b;
     --radius: 4px;
     --mono: 'IBM Plex Mono', monospace;
     --sans: 'Syne', sans-serif;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; padding: 24px 16px 60px; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    min-height: 100vh;
-    padding: 24px 16px 60px;
-  }
-
-  /* ── Header ── */
-  .header {
-    text-align: center;
-    margin-bottom: 32px;
-  }
-  .header h1 {
-    font-size: clamp(20px, 4vw, 28px);
-    font-weight: 800;
-    letter-spacing: -0.5px;
-  }
-  .header .subtitle {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 4px;
-  }
-  .live-dot {
-    display: inline-block;
-    width: 7px; height: 7px;
-    background: var(--green);
-    border-radius: 50%;
-    margin-right: 6px;
-    animation: pulse 2s infinite;
-  }
+  /* Header */
+  .header { text-align: center; margin-bottom: 32px; }
+  .header h1 { font-size: clamp(20px,4vw,28px); font-weight: 800; letter-spacing: -0.5px; }
+  .header .subtitle { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .live-dot { display: inline-block; width: 7px; height: 7px; background: var(--green); border-radius: 50%; margin-right: 6px; animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-  /* ── Tabs ── */
-  .tabs {
-    display: flex;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 28px;
-    gap: 0;
-  }
-  .tab-btn {
-    background: none;
-    border: none;
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: 13px;
-    font-weight: 600;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-    transition: color .2s, border-color .2s;
-    letter-spacing: .3px;
-  }
-  .tab-btn.active {
-    color: var(--text);
-    border-bottom-color: var(--text);
-  }
+  /* Tabs */
+  .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  .tab-btn { background: none; border: none; color: var(--muted); font-family: var(--sans); font-size: 13px; font-weight: 600; padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .2s, border-color .2s; letter-spacing: .3px; }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--text); }
   .tab-btn:hover { color: var(--text); }
-
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
 
-  /* ── Leaderboard Tab ── */
-  .lb-row {
-    display: flex;
-    align-items: center;
-    padding: 14px 16px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 8px;
-    background: var(--surface);
-    gap: 14px;
-    transition: border-color .2s;
-  }
+  /* Rank legend */
+  .rank-legend { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .legend-pill { font-family: var(--mono); font-size: 10px; padding: 3px 9px; border: 1px solid var(--border); border-radius: 20px; color: var(--muted); background: var(--surface); white-space: nowrap; }
+
+  /* Board header */
+  .board-header { display: grid; grid-template-columns: 28px 1fr 1fr 90px 80px; gap: 8px; padding: 6px 14px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+
+  /* LB row */
+  .lb-row { display: grid; grid-template-columns: 28px 1fr 1fr 90px 80px; gap: 8px; align-items: center; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 6px; background: var(--surface); transition: border-color .2s; }
   .lb-row:hover { border-color: #444; }
-  .lb-rank {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    width: 22px;
-    flex-shrink: 0;
-  }
-  .lb-rank.first { color: var(--gold); font-weight: 600; }
-  .lb-rank.second { color: var(--silver); }
-  .lb-rank.third { color: var(--bronze); }
-  .lb-name {
-    flex: 1;
-    font-size: 14px;
-    font-weight: 700;
-  }
-  .lb-active-dot {
-    width: 6px; height: 6px;
-    background: var(--green);
-    border-radius: 50%;
-    flex-shrink: 0;
-    animation: pulse 2s infinite;
-  }
-  .lb-time {
-    font-family: var(--mono);
-    font-size: 13px;
-    font-weight: 600;
-  }
-  .lb-bar-wrap {
-    width: 80px;
-    height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .lb-bar { height: 100%; background: var(--green); border-radius: 2px; transition: width .6s; }
+  .lb-pos { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .lb-pos.first { color: var(--gold); font-weight: 600; }
+  .lb-pos.second { color: var(--silver); }
+  .lb-pos.third { color: #cd7c39; }
 
-  /* ── WAR Tab ── */
-  .war-header {
-    text-align: center;
-    padding: 20px 0 28px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 28px;
-  }
-  .war-title {
-    font-size: clamp(18px, 4vw, 24px);
-    font-weight: 800;
-    letter-spacing: -0.3px;
-  }
-  .war-meta {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    margin-top: 12px;
-    flex-wrap: wrap;
-  }
-  .war-meta-item {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-  }
-  .war-meta-item span { color: var(--text); font-weight: 600; }
+  /* Username with pencil */
+  .uname-wrap, .war-uname-wrap { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .uname-text { font-size: 13px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .war-uname-text { font-size: 12px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .uname-edit-btn { opacity: 0; background: none; border: none; cursor: pointer; color: var(--muted); font-size: 12px; flex-shrink: 0; padding: 2px 4px; border-radius: 3px; transition: opacity .15s, color .15s; line-height: 1; }
+  .uname-wrap:hover .uname-edit-btn,
+  .war-uname-wrap:hover .uname-edit-btn { opacity: 1; }
+  .uname-edit-btn:hover { color: var(--text); }
+  .uname-input { background: var(--bg); border: 1px solid #555; border-radius: 3px; color: var(--text); font-family: var(--sans); font-size: 13px; font-weight: 700; padding: 2px 6px; width: 100%; max-width: 130px; outline: none; }
 
-  .day-labels {
-    display: grid;
-    grid-template-columns: 160px repeat(7, 1fr) 80px 70px;
-    gap: 4px;
-    padding: 0 16px 8px;
-    font-family: var(--mono);
-    font-size: 10px;
-    color: var(--muted);
-    text-align: center;
-  }
-  .day-labels .name-col { text-align: left; }
+  /* Task / active */
+  .lb-task { font-family: var(--mono); font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; gap: 5px; }
+  .active-dot { width: 5px; height: 5px; background: var(--green); border-radius: 50%; flex-shrink: 0; animation: pulse 2s infinite; }
+  .lb-time { font-family: var(--mono); font-size: 12px; font-weight: 600; text-align: right; }
 
-  .war-row {
-    display: grid;
-    grid-template-columns: 160px repeat(7, 1fr) 80px 70px;
-    gap: 4px;
-    align-items: center;
-    padding: 10px 16px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 6px;
-    background: var(--surface);
-    transition: border-color .2s;
-  }
-  .war-row:hover { border-color: #3a3a3a; }
+  /* Daily rank badge */
+  .rank-pill { font-family: var(--mono); font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; white-space: nowrap; text-align: center; }
+  .rank-starter  { background:#1a1a00; color:#d4d400; border:1px solid #3a3a00; }
+  .rank-bronze   { background:#2a1800; color:#cd7c39; border:1px solid #4a2e00; }
+  .rank-silver   { background:#1a1f2a; color:var(--silver); border:1px solid #2e3a4a; }
+  .rank-gold     { background:#2d2000; color:var(--gold); border:1px solid #4a3500; }
+  .rank-goldplus { background:#332200; color:#ffb830; border:1px solid #5a3d00; }
+  .rank-diamond  { background:#001a2d; color:#67e8f9; border:1px solid #0e4f6b; }
+  .rank-master   { background:#2d0a00; color:#fb923c; border:1px solid #7c2d12; }
+  .rank-legend   { background:#2d1040; color:#c084fc; border:1px solid #6b21a8; }
+  .rank-none     { color:var(--muted); font-family:var(--mono); font-size:11px; }
 
-  .war-username {
-    font-size: 13px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    overflow: hidden;
-  }
-  .war-username .uname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-  .day-cell {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    position: relative;
-  }
-  .day-bar-wrap {
-    width: 100%;
-    height: 28px;
-    background: #1e1e1e;
-    border-radius: 3px;
-    overflow: hidden;
-    position: relative;
-    border: 1px solid var(--border);
-  }
-  .day-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #2e4a2e;
-    transition: height .5s ease;
-  }
-  .day-bar.met { background: #166534; }
-  .day-bar.exceeded { background: #15803d; }
-  .day-hours {
-    font-family: var(--mono);
-    font-size: 9px;
-    color: var(--muted);
-    line-height: 1;
-  }
-  .day-hours.met { color: var(--green); }
-
-  /* badges */
-  .badge-king {
-    position: absolute;
-    top: -1px;
-    right: -1px;
-    font-size: 10px;
-    line-height: 1;
-  }
-  .badge-fail {
-    font-size: 9px;
-    font-family: var(--mono);
-    background: #3f1515;
-    color: var(--red);
-    border: 1px solid #6b1f1f;
-    border-radius: 3px;
-    padding: 1px 4px;
-    white-space: nowrap;
-  }
-  .badge-redeemed {
-    font-size: 9px;
-    font-family: var(--mono);
-    background: #1a2e1a;
-    color: var(--green);
-    border: 1px solid #2d4a2d;
-    border-radius: 3px;
-    padding: 1px 4px;
-  }
-  .day-cell.future .day-bar-wrap { opacity: .3; }
-
-  .war-total {
-    font-family: var(--mono);
-    font-size: 12px;
-    font-weight: 600;
-    text-align: center;
-  }
-  .rank-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 10px;
-    font-family: var(--mono);
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 20px;
-    white-space: nowrap;
-  }
-  .rank-gold { background: #2d2000; color: var(--gold); border: 1px solid #4a3500; }
-  .rank-silver { background: #1a1f2a; color: var(--silver); border: 1px solid #2e3a4a; }
-  .rank-bronze { background: #2a1800; color: #cd7c39; border: 1px solid #4a2e00; }
-  .rank-legend { background: #2d1040; color: #c084fc; border: 1px solid #6b21a8; }
-
-  /* War not active */
-  .war-inactive {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--muted);
-    font-family: var(--mono);
-    font-size: 13px;
-  }
-  .war-inactive .big { font-size: 32px; margin-bottom: 12px; }
-
-  /* ── Admin Panel ── */
-  .admin-toggle {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 16px;
-  }
-  .btn-sm {
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 6px 14px;
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--muted);
-    cursor: pointer;
-    transition: all .2s;
-  }
+  /* WAR Tab */
+  .war-admin-toggle { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+  .btn-sm { font-family: var(--mono); font-size: 11px; padding: 6px 14px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface); color: var(--muted); cursor: pointer; transition: all .2s; }
   .btn-sm:hover { color: var(--text); border-color: #555; }
   .btn-sm.danger { border-color: #6b1f1f; color: var(--red); }
   .btn-sm.danger:hover { background: #3f1515; }
   .btn-sm.primary { border-color: #2d4a2d; color: var(--green); }
   .btn-sm.primary:hover { background: #1a2e1a; }
 
-  .admin-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 24px;
-  }
-  .admin-panel h3 {
-    font-size: 12px;
-    font-family: var(--mono);
-    color: var(--muted);
-    margin-bottom: 16px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  .admin-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    align-items: flex-end;
-  }
-  .admin-field { display: flex; flex-direction: column; gap: 5px; }
-  .admin-field label { font-family: var(--mono); font-size: 10px; color: var(--muted); }
-  .admin-field input {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 12px;
-    padding: 7px 10px;
-    outline: none;
-    transition: border-color .2s;
-  }
-  .admin-field input:focus { border-color: #555; }
-  .admin-separator { width: 100%; height: 1px; background: var(--border); margin: 12px 0; }
+  /* Admin modal */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:200; align-items:center; justify-content:center; }
+  .modal-overlay.show { display:flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 24px; width: 100%; max-width: 440px; margin: 16px; max-height: 90vh; overflow-y: auto; }
+  .modal h3 { font-size: 12px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+  .modal-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+  .modal-field label { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+  .modal-field input { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: var(--mono); font-size: 12px; padding: 8px 10px; outline: none; transition: border-color .2s; width: 100%; }
+  .modal-field input:focus { border-color: #555; }
+  .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+  .modal-sep { height: 1px; background: var(--border); margin: 16px 0; }
+  .pwd-gate { display: flex; gap: 8px; align-items: flex-end; }
+  .pwd-gate input { flex: 1; }
 
-  /* Fail badge admin row */
-  .fail-admin-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
-  }
-  .fail-admin-row .uname { font-size: 12px; font-weight: 700; min-width: 100px; }
-  .day-pill {
-    font-family: var(--mono);
-    font-size: 10px;
-    padding: 3px 8px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    cursor: pointer;
-    color: var(--muted);
-    transition: all .2s;
-  }
-  .day-pill.has-fail { background: #3f1515; color: var(--red); border-color: #6b1f1f; }
-  .day-pill:hover { border-color: #555; color: var(--text); }
+  /* War layout */
+  .war-header { text-align: center; padding: 20px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  .war-title { font-size: clamp(18px,4vw,24px); font-weight: 800; letter-spacing: -0.3px; }
+  .war-meta { display: flex; justify-content: center; gap: 24px; margin-top: 12px; flex-wrap: wrap; }
+  .war-meta-item { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .war-meta-item span { color: var(--text); font-weight: 600; }
 
-  /* Legend section */
-  .legend-strip {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    padding: 14px;
-    border: 1px solid #4a3500;
-    border-radius: var(--radius);
-    background: #1a1200;
-    margin-bottom: 20px;
-  }
+  .day-labels { display: grid; grid-template-columns: 160px repeat(7,1fr) 80px 70px; gap: 4px; padding: 0 16px 8px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-align: center; }
+  .day-labels .name-col { text-align: left; }
+
+  .war-row { display: grid; grid-template-columns: 160px repeat(7,1fr) 80px 70px; gap: 4px; align-items: center; padding: 10px 16px; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 6px; background: var(--surface); transition: border-color .2s; }
+  .war-row:hover { border-color: #3a3a3a; }
+
+  .day-cell { display: flex; flex-direction: column; align-items: center; gap: 3px; position: relative; }
+  .day-bar-wrap { width: 100%; height: 28px; background: #1e1e1e; border-radius: 3px; overflow: hidden; position: relative; border: 1px solid var(--border); }
+  .day-bar { position: absolute; bottom: 0; left: 0; right: 0; background: #2e4a2e; transition: height .5s ease; }
+  .day-bar.met { background: #166534; }
+  .day-bar.exceeded { background: #15803d; }
+  .day-hours { font-family: var(--mono); font-size: 9px; color: var(--muted); line-height: 1; }
+  .day-hours.met { color: var(--green); }
+  .badge-king { position: absolute; top: -1px; right: -1px; font-size: 10px; line-height: 1; }
+  .badge-fail { font-size: 9px; font-family: var(--mono); background: #3f1515; color: var(--red); border: 1px solid #6b1f1f; border-radius: 3px; padding: 1px 4px; white-space: nowrap; }
+  .day-cell.future .day-bar-wrap { opacity: .3; }
+
+  .war-total { font-family: var(--mono); font-size: 12px; font-weight: 600; text-align: center; }
+  .war-rank-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-family: var(--mono); font-weight: 600; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
+  .wrank-gold   { background:#2d2000; color:var(--gold); border:1px solid #4a3500; }
+  .wrank-silver { background:#1a1f2a; color:var(--silver); border:1px solid #2e3a4a; }
+  .wrank-bronze { background:#2a1800; color:#cd7c39; border:1px solid #4a2e00; }
+
+  .legend-strip { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px; border: 1px solid #4a3500; border-radius: var(--radius); background: #1a1200; margin-bottom: 20px; }
   .legend-strip .l-label { font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
   .legend-strip .l-name { font-size: 15px; font-weight: 800; color: var(--gold); }
   .legend-strip .l-hours { font-family: var(--mono); font-size: 12px; color: var(--amber); }
 
-  /* Mobile */
-  @media (max-width: 700px) {
-    .day-labels { display: none; }
-    .war-row {
-      grid-template-columns: 1fr;
-      gap: 8px;
-    }
-    .war-days-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-    }
-    .war-total, .rank-badge { justify-self: start; }
-  }
+  .war-inactive { text-align: center; padding: 60px 20px; color: var(--muted); font-family: var(--mono); font-size: 13px; }
+  .war-inactive .big { font-size: 32px; margin-bottom: 12px; }
+
+  /* Fail admin */
+  .fail-admin-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .fail-admin-row .fname { font-size: 12px; font-weight: 700; min-width: 100px; }
+  .day-pill { font-family: var(--mono); font-size: 10px; padding: 3px 8px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); cursor: pointer; color: var(--muted); transition: all .2s; }
+  .day-pill.has-fail { background: #3f1515; color: var(--red); border-color: #6b1f1f; }
+  .day-pill:hover { border-color: #555; color: var(--text); }
 
   .no-users { text-align: center; padding: 40px; color: var(--muted); font-family: var(--mono); font-size: 13px; }
 
   /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 10px 16px;
-    font-family: var(--mono);
-    font-size: 12px;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all .3s;
-    z-index: 100;
-  }
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 16px; font-family: var(--mono); font-size: 12px; opacity: 0; transform: translateY(10px); transition: all .3s; z-index: 300; }
   .toast.show { opacity: 1; transform: translateY(0); }
 </style>
 </head>
@@ -448,40 +172,68 @@
 
 <!-- LEADERBOARD TAB -->
 <div class="tab-panel active" id="tab-leaderboard">
+  <div class="rank-legend">
+    <span class="legend-pill">⭐ Starter 1h+</span>
+    <span class="legend-pill">🥉 Bronze 3h+</span>
+    <span class="legend-pill">🥈 Silver 5h+</span>
+    <span class="legend-pill">🥇 Gold 7h+</span>
+    <span class="legend-pill">🥇 Gold+ 9h+</span>
+    <span class="legend-pill">💎 Diamond 10h+</span>
+    <span class="legend-pill">🔥 Master 12h+</span>
+    <span class="legend-pill">👑 Legend 15h+</span>
+  </div>
+  <div class="board-header">
+    <span>#</span><span>User</span><span>Current Task</span><span>Total Time</span><span>Rank</span>
+  </div>
   <div id="lb-list"><div class="no-users">Loading...</div></div>
 </div>
 
 <!-- WAR TAB -->
 <div class="tab-panel" id="tab-war">
-
-  <div class="admin-toggle">
-    <button class="btn-sm" onclick="toggleAdmin()">⚙ Admin</button>
+  <div class="war-admin-toggle">
+    <button class="btn-sm" onclick="openAdminModal()">⚙ Admin</button>
   </div>
+  <div id="warContent"></div>
+</div>
 
-  <!-- Admin Panel -->
-  <div class="admin-panel" id="adminPanel" style="display:none">
+<!-- Admin Modal -->
+<div class="modal-overlay" id="adminModal" onclick="closeAdminOnOverlay(event)">
+  <div class="modal">
     <h3>Admin Panel</h3>
-    <div class="admin-grid">
-      <div class="admin-field">
+
+    <!-- Step 1: password gate -->
+    <div id="adminGate">
+      <div class="modal-field">
         <label>Admin Password</label>
-        <input type="password" id="adminPwd" placeholder="password"/>
+        <div class="pwd-gate">
+          <input type="password" id="adminPwd" placeholder="Enter password" onkeydown="if(event.key==='Enter') verifyAdminPwd()"/>
+          <button class="btn-sm primary" onclick="verifyAdminPwd()">Unlock</button>
+        </div>
       </div>
-      <div class="admin-field">
+      <div style="display:flex;justify-content:flex-end;margin-top:8px">
+        <button class="btn-sm" onclick="closeAdminModal()">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Step 2: options after unlock -->
+    <div id="adminOptions" style="display:none">
+      <div class="modal-field">
         <label>Challenge Start Date</label>
         <input type="date" id="startDateInput"/>
       </div>
-      <button class="btn-sm primary" onclick="setWarConfig()">Set Start Date</button>
-      <button class="btn-sm" onclick="toggleWarActive()">Toggle Active</button>
-      <button class="btn-sm danger" onclick="resetWar()">Reset Challenge</button>
+      <div class="modal-actions">
+        <button class="btn-sm primary" onclick="setWarConfig()">Set Start Date</button>
+        <button class="btn-sm" onclick="toggleWarActive()">Toggle Active</button>
+        <button class="btn-sm danger" onclick="resetWar()">Reset Challenge</button>
+      </div>
+      <div class="modal-sep"></div>
+      <h3>Fail Badges — click day to toggle</h3>
+      <div id="failAdminRows"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:16px">
+        <button class="btn-sm" onclick="closeAdminModal()">Close</button>
+      </div>
     </div>
-
-    <div class="admin-separator"></div>
-    <h3>Fail Badges — Click day to toggle red badge</h3>
-    <div id="failAdminRows"></div>
   </div>
-
-  <!-- War Content -->
-  <div id="warContent"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -489,17 +241,12 @@
 <script>
 const REFRESH_MS = 15000;
 let warData = null;
-let adminVisible = false;
+let adminUnlocked = false;
 
 function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['leaderboard','war'][i] === name));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-}
-
-function toggleAdmin() {
-  adminVisible = !adminVisible;
-  document.getElementById('adminPanel').style.display = adminVisible ? 'block' : 'none';
 }
 
 function showToast(msg, ok=true) {
@@ -508,13 +255,126 @@ function showToast(msg, ok=true) {
   t.style.borderColor = ok ? '#2d4a2d' : '#6b1f1f';
   t.style.color = ok ? 'var(--green)' : 'var(--red)';
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+  setTimeout(() => t.classList.remove('show'), 2800);
 }
 
 function msToHHMM(ms) {
   const h = Math.floor(ms / 3600000);
   const m = Math.floor((ms % 3600000) / 60000);
   return `${h}h ${m.toString().padStart(2,'0')}m`;
+}
+
+function getDailyRank(ms) {
+  const h = ms / 3600000;
+  if (h >= 15) return { label: '👑 Legend', cls: 'rank-legend' };
+  if (h >= 12) return { label: '🔥 Master', cls: 'rank-master' };
+  if (h >= 10) return { label: '💎 Diamond', cls: 'rank-diamond' };
+  if (h >= 9)  return { label: '🥇 Gold+',  cls: 'rank-goldplus' };
+  if (h >= 7)  return { label: '🥇 Gold',   cls: 'rank-gold' };
+  if (h >= 5)  return { label: '🥈 Silver', cls: 'rank-silver' };
+  if (h >= 3)  return { label: '🥉 Bronze', cls: 'rank-bronze' };
+  if (h >= 1)  return { label: '⭐ Starter', cls: 'rank-starter' };
+  return null;
+}
+
+// ── Admin modal ───────────────────────────────────────────────────────────────
+function openAdminModal() {
+  adminUnlocked = false;
+  document.getElementById('adminGate').style.display = 'block';
+  document.getElementById('adminOptions').style.display = 'none';
+  document.getElementById('adminPwd').value = '';
+  document.getElementById('adminModal').classList.add('show');
+  setTimeout(() => document.getElementById('adminPwd').focus(), 50);
+}
+
+function closeAdminModal() {
+  document.getElementById('adminModal').classList.remove('show');
+}
+
+function closeAdminOnOverlay(e) {
+  if (e.target === document.getElementById('adminModal')) closeAdminModal();
+}
+
+async function verifyAdminPwd() {
+  const pwd = document.getElementById('adminPwd').value;
+  if (!pwd) { showToast('Enter password', false); return; }
+  try {
+    const res = await fetch('/api/war/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ adminPassword: pwd })
+    });
+    if (res.status === 403) { showToast('Wrong password', false); return; }
+    const d = await res.json();
+    if (d.error) { showToast('Wrong password', false); return; }
+    adminUnlocked = true;
+    document.getElementById('adminGate').style.display = 'none';
+    document.getElementById('adminOptions').style.display = 'block';
+    renderFailAdmin(warData);
+  } catch(e) { showToast('Request failed', false); }
+}
+
+// ── Username rename ───────────────────────────────────────────────────────────
+function makeUsernameCell(username, wrapClass, textClass) {
+  const wrap = document.createElement('div');
+  wrap.className = wrapClass;
+
+  const span = document.createElement('span');
+  span.className = textClass;
+  span.textContent = username;
+
+  const pencil = document.createElement('button');
+  pencil.className = 'uname-edit-btn';
+  pencil.title = 'Rename';
+  pencil.textContent = '✎';
+  pencil.addEventListener('click', () => startRename(wrap, username, wrapClass, textClass));
+
+  wrap.appendChild(span);
+  wrap.appendChild(pencil);
+  return wrap;
+}
+
+function startRename(wrap, oldName, wrapClass, textClass) {
+  const input = document.createElement('input');
+  input.className = 'uname-input';
+  input.value = oldName;
+  wrap.innerHTML = '';
+  wrap.appendChild(input);
+  input.focus();
+  input.select();
+
+  let committed = false;
+  async function commit() {
+    if (committed) return;
+    committed = true;
+    const newName = input.value.trim();
+    if (!newName || newName === oldName) {
+      restoreCell(wrap, oldName, wrapClass, textClass);
+      return;
+    }
+    try {
+      const res = await fetch('/api/rename', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ oldName, newName })
+      });
+      const d = await res.json();
+      if (d.ok) { showToast(`Renamed to ${d.newName}`); fetchLeaderboard(); fetchWar(); }
+      else { showToast(d.error || 'Error', false); restoreCell(wrap, oldName, wrapClass, textClass); }
+    } catch(e) { showToast('Request failed', false); restoreCell(wrap, oldName, wrapClass, textClass); }
+  }
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); commit(); }
+    if (e.key === 'Escape') { committed = true; restoreCell(wrap, oldName, wrapClass, textClass); }
+  });
+  input.addEventListener('blur', commit);
+}
+
+function restoreCell(wrap, name, wrapClass, textClass) {
+  wrap.innerHTML = '';
+  const restored = makeUsernameCell(name, wrapClass, textClass);
+  restored.childNodes.forEach(n => wrap.appendChild(n));
 }
 
 // ── Leaderboard ───────────────────────────────────────────────────────────────
@@ -528,19 +388,45 @@ async function fetchLeaderboard() {
 }
 
 function renderLeaderboard(users) {
-  const maxMs = users[0]?.timeSpentMs || 1;
-  const rankClass = ['first','second','third'];
-  const html = users.length === 0
-    ? '<div class="no-users">No data yet.</div>'
-    : users.map((u, i) => `
-      <div class="lb-row">
-        <div class="lb-rank ${rankClass[i]||''}">${i+1}</div>
-        <div class="lb-name">${u.username}</div>
-        ${u.isActive ? '<div class="lb-active-dot"></div>' : '<div style="width:6px"></div>'}
-        <div class="lb-bar-wrap"><div class="lb-bar" style="width:${Math.round(u.timeSpentMs/maxMs*100)}%"></div></div>
-        <div class="lb-time">${msToHHMM(u.timeSpentMs)}</div>
-      </div>`).join('');
-  document.getElementById('lb-list').innerHTML = html;
+  const list = document.getElementById('lb-list');
+  if (!users.length) { list.innerHTML = '<div class="no-users">No data yet.</div>'; return; }
+  list.innerHTML = '';
+  const posClass = ['first','second','third'];
+
+  users.forEach((u, i) => {
+    const row = document.createElement('div');
+    row.className = 'lb-row';
+
+    const pos = document.createElement('div');
+    pos.className = 'lb-pos ' + (posClass[i] || '');
+    pos.textContent = i + 1;
+
+    const unameCell = makeUsernameCell(u.username, 'uname-wrap', 'uname-text');
+
+    const taskDiv = document.createElement('div');
+    taskDiv.className = 'lb-task';
+    if (u.isActive) { const d = document.createElement('span'); d.className = 'active-dot'; taskDiv.appendChild(d); }
+    const tl = document.createElement('span');
+    tl.textContent = u.currentTask || (u.isActive ? 'Studying...' : '—');
+    taskDiv.appendChild(tl);
+
+    const timeDiv = document.createElement('div');
+    timeDiv.className = 'lb-time';
+    timeDiv.textContent = msToHHMM(u.timeSpentMs);
+
+    const rankDiv = document.createElement('div');
+    const rank = getDailyRank(u.timeSpentMs);
+    rankDiv.innerHTML = rank
+      ? `<span class="rank-pill ${rank.cls}">${rank.label}</span>`
+      : `<span class="rank-none">—</span>`;
+
+    row.appendChild(pos);
+    row.appendChild(unameCell);
+    row.appendChild(taskDiv);
+    row.appendChild(timeDiv);
+    row.appendChild(rankDiv);
+    list.appendChild(row);
+  });
 }
 
 // ── War ───────────────────────────────────────────────────────────────────────
@@ -549,88 +435,32 @@ async function fetchWar() {
     const res = await fetch('/api/war/status');
     warData = await res.json();
     renderWar(warData);
-    renderFailAdmin(warData);
+    if (adminUnlocked) renderFailAdmin(warData);
   } catch(e) { console.error(e); }
 }
 
 function renderWar(data) {
   const container = document.getElementById('warContent');
-
   if (!data.startDate) {
     container.innerHTML = `<div class="war-inactive"><div class="big">⚔️</div>No active challenge.<br>Admin can set a start date to begin.</div>`;
     return;
   }
 
-  const dayLabels = Array.from({length:7}, (_,i) => `D${i+1}`);
   const now = new Date();
-  const startD = new Date(data.startDate);
-  const endD = new Date(startD); endD.setDate(endD.getDate()+7);
+  const endD = new Date(data.startDate); endD.setDate(endD.getDate() + 7);
   const daysLeft = Math.max(0, Math.ceil((endD - now) / 86400000));
 
-  // Legend strip
   let legendHtml = '';
   if (data.legend) {
     const lu = data.users.find(u => u.username === data.legend);
-    legendHtml = `
-      <div class="legend-strip">
-        <span style="font-size:18px">👑</span>
-        <div>
-          <div class="l-label">Current Legend</div>
-          <div class="l-name">${data.legend}</div>
-        </div>
-        <div class="l-hours">${lu ? lu.totalHours.toFixed(1) : '0'}h total</div>
-      </div>`;
+    legendHtml = `<div class="legend-strip">
+      <span style="font-size:18px">👑</span>
+      <div><div class="l-label">Current Legend</div><div class="l-name">${data.legend}</div></div>
+      <div class="l-hours">${lu ? lu.totalHours.toFixed(1) : '0'}h total</div>
+    </div>`;
   }
 
-  // Sort users by total hours desc
   const users = [...data.users].sort((a,b) => b.totalHours - a.totalHours);
-
-  const dayLabelsRow = `
-    <div class="day-labels">
-      <div class="name-col">Warrior</div>
-      ${dayLabels.map(d=>`<div>${d}</div>`).join('')}
-      <div>Total</div>
-      <div>Rank</div>
-    </div>`;
-
-  const rows = users.map(u => {
-    const dayCells = u.days.map((day, i) => {
-      const pct = Math.min(100, (day.hours / 14) * 100);
-      const barClass = day.met14h ? 'exceeded' : day.met10h ? 'met' : '';
-      const isKing = data.kingsPerDay[i] === u.username && day.hours > 0;
-      const future = day.isFuture ? 'future' : '';
-      const badge = day.hasRedBadge
-        ? `<span class="badge-fail">✗ fail</span>`
-        : '';
-      return `
-        <div class="day-cell ${future}">
-          <div class="day-bar-wrap">
-            <div class="day-bar ${barClass}" style="height:${future ? 0 : pct}%"></div>
-            ${isKing ? `<span class="badge-king">👑</span>` : ''}
-          </div>
-          <div class="day-hours ${day.met10h && !future ? 'met' : ''}">${future ? '' : day.hours.toFixed(1)}</div>
-          ${badge}
-        </div>`;
-    }).join('');
-
-    const rankHtml = u.rank === 'gold' ? `<span class="rank-badge rank-gold">🥇 Gold</span>`
-      : u.rank === 'silver' ? `<span class="rank-badge rank-silver">🥈 Silver</span>`
-      : u.rank === 'bronze' ? `<span class="rank-badge rank-bronze">🥉 Bronze</span>`
-      : `<span class="rank-badge" style="color:var(--muted);border-color:var(--border)">—</span>`;
-
-    const isLegend = data.legend === u.username;
-    const legendMark = isLegend ? ' 👑' : '';
-
-    return `
-      <div class="war-row">
-        <div class="war-username">
-          <span class="uname">${u.username}${legendMark}</span>
-        </div>
-        ${dayCells}
-        <div class="war-total">${u.totalHours.toFixed(1)}h</div>
-        <div>${rankHtml}</div>
-      </div>`;
-  }).join('');
 
   container.innerHTML = `
     <div class="war-header">
@@ -643,35 +473,72 @@ function renderWar(data) {
       </div>
     </div>
     ${legendHtml}
-    ${dayLabelsRow}
-    ${rows.length ? rows : '<div class="no-users">No warriors yet.</div>'}
-  `;
+    <div class="day-labels">
+      <div class="name-col">Warrior</div>
+      ${Array.from({length:7},(_,i)=>`<div>D${i+1}</div>`).join('')}
+      <div>Total</div><div>Rank</div>
+    </div>
+    <div id="warRows"></div>`;
+
+  const warRows = document.getElementById('warRows');
+  if (!users.length) { warRows.innerHTML = '<div class="no-users">No warriors yet.</div>'; return; }
+
+  users.forEach(u => {
+    const row = document.createElement('div');
+    row.className = 'war-row';
+
+    const unameCell = makeUsernameCell(u.username, 'war-uname-wrap', 'war-uname-text');
+    row.appendChild(unameCell);
+
+    u.days.forEach((day, i) => {
+      const cell = document.createElement('div');
+      cell.className = 'day-cell' + (day.isFuture ? ' future' : '');
+      const pct = Math.min(100, (day.hours / 14) * 100);
+      const barClass = day.met14h ? 'exceeded' : day.met10h ? 'met' : '';
+      const isKing = data.kingsPerDay[i] === u.username && day.hours > 0;
+      cell.innerHTML = `
+        <div class="day-bar-wrap">
+          <div class="day-bar ${barClass}" style="height:${day.isFuture?0:pct}%"></div>
+          ${isKing ? `<span class="badge-king">👑</span>` : ''}
+        </div>
+        <div class="day-hours ${day.met10h && !day.isFuture ? 'met' : ''}">${day.isFuture ? '' : day.hours.toFixed(1)}</div>
+        ${day.hasRedBadge ? `<span class="badge-fail">✗ fail</span>` : ''}`;
+      row.appendChild(cell);
+    });
+
+    const total = document.createElement('div');
+    total.className = 'war-total';
+    total.textContent = u.totalHours.toFixed(1) + 'h';
+    row.appendChild(total);
+
+    const rankDiv = document.createElement('div');
+    rankDiv.innerHTML = u.rank === 'gold'   ? `<span class="war-rank-badge wrank-gold">🥇 Gold</span>`
+      : u.rank === 'silver' ? `<span class="war-rank-badge wrank-silver">🥈 Silver</span>`
+      : u.rank === 'bronze' ? `<span class="war-rank-badge wrank-bronze">🥉 Bronze</span>`
+      : `<span style="color:var(--muted);font-family:var(--mono);font-size:11px">—</span>`;
+    row.appendChild(rankDiv);
+
+    warRows.appendChild(row);
+  });
 }
 
 function renderFailAdmin(data) {
-  if (!data || !data.users) return;
   const container = document.getElementById('failAdminRows');
-  if (!container) return;
-
-  const rows = data.users.map(u => {
-    const pills = u.days.map((day, i) => {
-      const hasFail = day.hasRedBadge;
-      return `<span class="day-pill ${hasFail?'has-fail':''}" onclick="toggleFailBadge('${u.username}',${i})">${hasFail?'✗':''} D${i+1}</span>`;
-    }).join('');
-    return `<div class="fail-admin-row"><span class="uname">${u.username}</span>${pills}</div>`;
-  }).join('');
-
-  container.innerHTML = rows || '<div style="color:var(--muted);font-family:var(--mono);font-size:12px">No users yet.</div>';
+  if (!container || !data?.users) return;
+  container.innerHTML = data.users.map(u =>
+    `<div class="fail-admin-row">
+      <span class="fname">${u.username}</span>
+      ${u.days.map((day, i) =>
+        `<span class="day-pill ${day.hasRedBadge?'has-fail':''}" onclick="toggleFailBadge('${u.username}',${i})">${day.hasRedBadge?'✗ ':''}D${i+1}</span>`
+      ).join('')}
+    </div>`
+  ).join('') || '<div style="color:var(--muted);font-family:var(--mono);font-size:12px">No users yet.</div>';
 }
 
 async function toggleFailBadge(username, dayIndex) {
-  const pwd = document.getElementById('adminPwd')?.value;
-  if (!pwd) { showToast('Enter admin password first', false); return; }
-
+  const pwd = document.getElementById('adminPwd').value;
   const user = warData?.users?.find(u => u.username === username);
-  const hasFail = user?.days[dayIndex]?.hasRedBadge;
-  const action = hasFail ? 'remove' : 'add';
-
+  const action = user?.days[dayIndex]?.hasRedBadge ? 'remove' : 'add';
   try {
     const res = await fetch('/api/war/fail-badge', {
       method: 'POST',
@@ -685,9 +552,8 @@ async function toggleFailBadge(username, dayIndex) {
 }
 
 async function setWarConfig() {
-  const pwd = document.getElementById('adminPwd')?.value;
-  const startDate = document.getElementById('startDateInput')?.value;
-  if (!pwd) { showToast('Enter admin password', false); return; }
+  const pwd = document.getElementById('adminPwd').value;
+  const startDate = document.getElementById('startDateInput').value;
   if (!startDate) { showToast('Select a start date', false); return; }
   try {
     const res = await fetch('/api/war/config', {
@@ -696,30 +562,27 @@ async function setWarConfig() {
       body: JSON.stringify({ adminPassword: pwd, startDate, active: true })
     });
     const d = await res.json();
-    if (d.ok) { showToast('Challenge configured!'); fetchWar(); }
+    if (d.ok) { showToast('Challenge configured!'); fetchWar(); closeAdminModal(); }
     else showToast(d.error || 'Error', false);
   } catch(e) { showToast('Request failed', false); }
 }
 
 async function toggleWarActive() {
-  const pwd = document.getElementById('adminPwd')?.value;
-  if (!pwd) { showToast('Enter admin password', false); return; }
-  const current = warData?.active;
+  const pwd = document.getElementById('adminPwd').value;
   try {
     const res = await fetch('/api/war/config', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ adminPassword: pwd, active: !current })
+      body: JSON.stringify({ adminPassword: pwd, active: !warData?.active })
     });
     const d = await res.json();
-    if (d.ok) { showToast(`Challenge ${!current?'activated':'deactivated'}`); fetchWar(); }
+    if (d.ok) { showToast(`Challenge ${!warData?.active?'activated':'deactivated'}`); fetchWar(); }
     else showToast(d.error || 'Error', false);
   } catch(e) { showToast('Request failed', false); }
 }
 
 async function resetWar() {
-  const pwd = document.getElementById('adminPwd')?.value;
-  if (!pwd) { showToast('Enter admin password', false); return; }
+  const pwd = document.getElementById('adminPwd').value;
   if (!confirm('Reset entire challenge? This clears all badges and start date.')) return;
   try {
     const res = await fetch('/api/war/reset', {
@@ -728,12 +591,11 @@ async function resetWar() {
       body: JSON.stringify({ adminPassword: pwd })
     });
     const d = await res.json();
-    if (d.ok) { showToast('Challenge reset'); fetchWar(); }
+    if (d.ok) { showToast('Challenge reset'); fetchWar(); closeAdminModal(); }
     else showToast(d.error || 'Error', false);
   } catch(e) { showToast('Request failed', false); }
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
 fetchLeaderboard();
 fetchWar();
 setInterval(() => { fetchLeaderboard(); fetchWar(); }, REFRESH_MS);

@@ -290,5 +290,30 @@ function autoRedeem(db, username) {
   }
 }
 
+// Rename user
+app.post('/api/rename', (req, res) => {
+  const { oldName, newName } = req.body;
+  if (!oldName || !newName) return res.status(400).json({ error: 'oldName and newName required' });
+  const trimmed = newName.trim();
+  if (!trimmed) return res.status(400).json({ error: 'newName cannot be empty' });
+
+  const db = loadDB();
+  if (!db.users[oldName]) return res.status(404).json({ error: 'User not found' });
+  if (db.users[trimmed] && trimmed !== oldName) return res.status(409).json({ error: 'Name already taken' });
+
+  // Move user data
+  db.users[trimmed] = db.users[oldName];
+  if (trimmed !== oldName) delete db.users[oldName];
+
+  // Update war fail badges
+  if (db.war?.failBadges?.[oldName]) {
+    db.war.failBadges[trimmed] = db.war.failBadges[oldName];
+    if (trimmed !== oldName) delete db.war.failBadges[oldName];
+  }
+
+  saveDB(db);
+  res.json({ ok: true, newName: trimmed });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
