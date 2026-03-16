@@ -53,18 +53,23 @@ function getWarDateStr(spDateKey, hourOfDay) {
 
 app.post('/api/update', (req, res) => {
   const { username, timeSpentMs, isActive, taskBreakdown } = req.body;
-  if (!username) return res.status(400).json({ error: 'username required' });
+
+  // Drop empty or "unknown" usernames silently
+  const trimmed = (username || '').trim();
+  if (!trimmed || trimmed.toLowerCase() === 'unknown') {
+    return res.json({ ok: false, reason: 'unknown user ignored' });
+  }
 
   const db = loadDB();
-  if (!db.users[username]) db.users[username] = { timeSpentMs: 0, isActive: false, lastUpdate: null, dailyMs: {} };
+  if (!db.users[trimmed]) db.users[trimmed] = { timeSpentMs: 0, isActive: false, lastUpdate: null, dailyMs: {} };
 
-  db.users[username].timeSpentMs = timeSpentMs || 0;
-  db.users[username].isActive = isActive || false;
-  db.users[username].lastUpdate = new Date().toISOString();
+  db.users[trimmed].timeSpentMs = timeSpentMs || 0;
+  db.users[trimmed].isActive = isActive || false;
+  db.users[trimmed].lastUpdate = new Date().toISOString();
 
   // Store daily breakdown for war calculations
   if (taskBreakdown) {
-    db.users[username].dailyMs = taskBreakdown; // { "2025-01-01": ms, ... }
+    db.users[trimmed].dailyMs = taskBreakdown; // { "2025-01-01": ms, ... }
   }
 
   saveDB(db);
@@ -73,12 +78,25 @@ app.post('/api/update', (req, res) => {
 
 app.get('/api/leaderboard', (req, res) => {
   const db = loadDB();
-  const users = Object.entries(db.users).map(([name, data]) => ({
-    username: name,
-    timeSpentMs: data.timeSpentMs || 0,
-    isActive: data.isActive || false,
-    lastUpdate: data.lastUpdate
-  }));
+  const banned = new Set(db.war?.banned || []);
+
+  const users = Object.entries(db.users)
+    .filter(([name]) => !banned.has(name))
+    .map(([name, data]) => {
+      // Sum dailyMs for correct total — same logic as war leaderboard
+      const dailyMs = data.dailyMs || {};
+      const totalMs = Object.values(dailyMs).reduce((s, v) => s + v, 0);
+      // Fall back to stored timeSpentMs only if no dailyMs at all
+      const timeSpentMs = Object.keys(dailyMs).length > 0 ? totalMs : (data.timeSpentMs || 0);
+
+      return {
+        username: name,
+        timeSpentMs,
+        isActive: data.isActive || false,
+        lastUpdate: data.lastUpdate,
+      };
+    });
+
   users.sort((a, b) => b.timeSpentMs - a.timeSpentMs);
   res.json(users);
 });
@@ -117,9 +135,13 @@ app.get('/api/war/status', (req, res) => {
   const currentDay = getWarDay(war.startDate, currentWarDateStr);
   const totalWarDays = 7;
 
+  // Filter banned users
+  const banned = new Set(war.banned || []);
+
   // Build per-user data
   const userStats = {};
   for (const [username, data] of Object.entries(users)) {
+    if (banned.has(username)) continue;
     const dailyMs = data.dailyMs || {};
     const days = []; // index 0 = war day 1
 
@@ -290,6 +312,53 @@ function autoRedeem(db, username) {
   }
 }
 
+// Admin: list all users (including banned) for admin panel
+app.get('/api/admin/users', (req, res) => {
+  const pwd = req.headers['x-admin-password'] || req.query.password;
+  const db = loadDB();
+  if (pwd !== (db.war?.adminPassword || ADMIN_PASSWORD)) {
+    return res.status(403).json({ error: 'forbidden' });
+  }
+
+  const banned = new Set(db.war?.banned || []);
+  const dailySumMs = (data) => {
+    const dailyMs = data.dailyMs || {};
+    const total = Object.values(dailyMs).reduce((s, v) => s + v, 0);
+    return Object.keys(dailyMs).length > 0 ? total : (data.timeSpentMs || 0);
+  };
+
+  const users = Object.entries(db.users)
+    .map(([name, data]) => ({
+      username: name,
+      timeSpentMs: dailySumMs(data),
+      isActive: data.isActive || false,
+      lastUpdate: data.lastUpdate,
+      banned: banned.has(name),
+    }))
+    .sort((a, b) => b.timeSpentMs - a.timeSpentMs);
+
+  res.json(users);
+});
+
+// Admin: ban (hide) or restore a user — data is preserved, user just disappears from boards
+app.post('/api/admin/ban', (req, res) => {
+  if (!verifyAdmin(req, res)) return;
+  const { username, action } = req.body; // action: 'ban' | 'unban'
+  if (!username) return res.status(400).json({ error: 'username required' });
+
+  const db = loadDB();
+  if (!db.war.banned) db.war.banned = [];
+
+  if (action === 'unban') {
+    db.war.banned = db.war.banned.filter(u => u !== username);
+  } else {
+    if (!db.war.banned.includes(username)) db.war.banned.push(username);
+  }
+
+  saveDB(db);
+  res.json({ ok: true, banned: db.war.banned });
+});
+
 // Delete user
 app.post('/api/delete-user', (req, res) => {
   if (!verifyAdmin(req, res)) return;
@@ -299,6 +368,7 @@ app.post('/api/delete-user', (req, res) => {
   if (!db.users[username]) return res.status(404).json({ error: 'User not found' });
   delete db.users[username];
   if (db.war?.failBadges?.[username]) delete db.war.failBadges[username];
+  if (db.war?.banned) db.war.banned = db.war.banned.filter(u => u !== username);
   saveDB(db);
   res.json({ ok: true });
 });
@@ -322,6 +392,14 @@ app.post('/api/rename', (req, res) => {
   if (db.war?.failBadges?.[oldName]) {
     db.war.failBadges[trimmed] = db.war.failBadges[oldName];
     if (trimmed !== oldName) delete db.war.failBadges[oldName];
+  }
+
+  // Update banned list
+  if (db.war?.banned) {
+    const idx = db.war.banned.indexOf(oldName);
+    if (idx !== -1 && trimmed !== oldName) {
+      db.war.banned[idx] = trimmed;
+    }
   }
 
   saveDB(db);
