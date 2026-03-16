@@ -290,6 +290,19 @@ function autoRedeem(db, username) {
   }
 }
 
+// Delete user
+app.post('/api/delete-user', (req, res) => {
+  if (!verifyAdmin(req, res)) return;
+  const { username } = req.body;
+  if (!username) return res.status(400).json({ error: 'username required' });
+  const db = loadDB();
+  if (!db.users[username]) return res.status(404).json({ error: 'User not found' });
+  delete db.users[username];
+  if (db.war?.failBadges?.[username]) delete db.war.failBadges[username];
+  saveDB(db);
+  res.json({ ok: true });
+});
+
 // Rename user
 app.post('/api/rename', (req, res) => {
   const { oldName, newName } = req.body;
